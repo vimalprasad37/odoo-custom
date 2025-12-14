@@ -27,7 +27,7 @@ jobs:
       - name: Restart Odoo Service
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
-            sudo systemctl restart odoo17
+            sudo systemctl restart odoo
           "
 
       - name: Deployment Status
