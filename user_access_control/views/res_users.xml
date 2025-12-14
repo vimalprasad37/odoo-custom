@@ -1,0 +1,61 @@
+<odoo>
+	<record id="view_user_form_inherited" model="ir.ui.view">
+		<field name="name">res.users.form.address</field>
+		<field name="model">res.users</field>
+		<field name="inherit_id" ref="base.view_users_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//page[@name='access_rights']" position="after">
+				<page string="Manage Model Access" groups="user_access_control.group_access_manager">
+					<field name="access_management_ids">
+						<tree >
+							<field name="user_type" required="1"/>
+							<field name="model_id" required="1"/>
+							<field name="model_name" optional="hide"/>
+							<field name="user_id" optional="hide"/>
+							<field name="filter_domain" optional="hide"/>
+							<field name="readonly"/>
+							<field name="hide_create"/>
+							<field name="hide_edit"/>
+							<field name="hide_delete"/>
+							<field name="hide_export"/>
+							<field name="hide_import"/>
+						</tree>
+						<form >
+							<group name="access_management" string="Access Restrictions">
+								<group>
+									<field name="user_id" readonly="1"/>
+									<field name="user_type" />
+									<field name="model_id" required="1" options="{'no_create': True, 'no_create_edit': True}"/>
+									<field name="model_name" invisble="1"/>
+									<field name="fields_restiction" widget="boolean_toggle"/>
+								</group>
+								<group >
+									<field name="readonly"/>
+									<field name="hide_create"/>
+									<field name="hide_edit"/>
+									<field name="hide_delete" force_save="1"/>
+									<field name="hide_export"/>
+									<field name="hide_import"/>
+									<field name="related_model_ids" widget="many2many_tags" invisible="1"/>
+								</group>
+							</group>
+							<group string="Fields Access Restrictions" attrs="{'invisible': [('fields_restiction', '!=', True)]}">
+								<field name="fields_access_ids">
+									<tree editable="bottom">
+										<field name="field_ids" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True}"
+										 domain="[('model_id', 'in', parent.related_model_ids)]"/>
+										<field name="restriction_type"/>
+									</tree>
+								</field>
+							</group>
+							<group string="Records Filter">
+								<label for="filter_domain" />
+								<field name="filter_domain" force_save="1" nolabel="1" widget="domain" options="{'model': 'model_name', 'in_dialog': False, 'foldable': True}" />
+							</group>
+						</form>
+					</field>
+				</page>
+			</xpath>
+		</field>
+	</record>
+</odoo>

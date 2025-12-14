@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Access Management Module for Odoo V16</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        code {
+            background-color: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        pre {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .note {
+            background-color: #e3f2fd;
+            border-left: 4px solid #4a6fa5;
+            padding: 12px;
+            margin: 15px 0;
+        }
+        .warning {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 15px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: white;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            background-color: white;
+            padding: 5px;
+        }
+        .steps {
+            counter-reset: step-counter;
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .steps li {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 20px;
+            min-height: 40px;
+            background-color: white;
+            padding: 15px 15px 15px 50px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .simplesteps li {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 20px;
+            min-height: 40px;
+            background-color: white;
+            padding: 15px 15px 15px 50px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .steps li:before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            background: #4a6fa5;
+            color: white;
+            font-weight: bold;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+        }
+        
+        /* Collapsible section styles */
+        .collapsible {
+            background-color: #4a6fa5;
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .collapsible:hover {
+            background-color: #3a5a80;
+        }
+        .collapsible:after {
+            content: '\002B';
+            color: white;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+        .active:after {
+            content: "\2212";
+        }
+        .content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: white;
+            border-radius: 0 0 5px 5px;
+        }
+        .screenshot-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 0;
+        }
+        .screenshot-item {
+            text-align: center;
+        }
+        .screenshot-item h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .simple-access-config {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px 0;
+            padding: 0;
+        }
+        
+        .clean-permission-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 10px 0;
+        }
+        
+        .clean-permission-list > li {
+            margin-bottom: 15px;
+        }
+        
+        .permission-sublist {
+            list-style-type: none;
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+        
+        .permission-sublist li {
+            padding: 4px 0;
+            position: relative;
+        }
+        
+        .permission-check {
+            display: inline-block;
+            width: 18px;
+            color: #4a6fa5;
+            font-weight: bold;
+        }
+        
+        h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Advanced Access Control for Users</h1>
+    <div class="note">
+        <p>This module provides control over user access rights, allowing administrators to precisely configure what users can see and do within the Odoo system.</p>
+    </div>
+    
+    <h2>Module Features</h2>
+    <ul>
+        <li><strong>User Friendly Access Control</strong>: Restrict create, edit, delete, import, and export permissions per Model</li>
+        <li><strong>Records Filtering</strong>: Apply domain filters to restrict visible records</li>
+        <li><strong>Field-level Restrictions</strong>: Make any field Readonly, Invisible, or Mandatory for the selected Model</li>
+    </ul>
+    
+    <h2>Configuration Guide</h2>
+    
+    <h3>1. Basic User Settings</h3>
+    <ol class="steps">
+        <li>Go to <strong>Settings → Users & Companies → Users</strong></li>
+        <li>Select an existing user or create a new one</li>
+        <li>In the user form, you'll find the <strong>Manage Model Access</strong> section, click add a line.</li>
+        <li><strong>User Type</strong>: Select from the three available options</li>
+    </ol>
+    <div class="note">
+        <p><strong>User Type Options:</strong></p>
+        <ul>
+            <li><strong>User - Own Documents</strong>: Can see only their records and can't delete</li>
+            <li><strong>User - All Documents</strong>: Can see every record but can't delete</li>
+            <li><strong>Admin</strong>: Has all access rights</li>
+        </ul>
+    </div>
+    
+    <div class="simple-access-config">
+        <h4>2. Model Access Configuration</h4>
+        <ul class="clean-permission-list">
+          <li>
+            <p>Select the model (e.g. Sales Order, Journal Entry) and set below operations:</p>
+            <ul class="permission-sublist">
+              <li><span class="permission-check">✓</span> <strong>Readonly:</strong> Makes the entire model view-only and hides all the buttons.</li>
+              <li><span class="permission-check">✓</span> <strong>Hide Create:</strong> Disables new record creation</li>
+              <li><span class="permission-check">✓</span> <strong>Hide Edit:</strong> Disables editing any records</li>
+              <li><span class="permission-check">✓</span> <strong>Hide Delete:</strong> Disables record deletion</li>
+              <li><span class="permission-check">✓</span> <strong>Hide Export:</strong> Disables Excel/CSV export option</li>
+              <li><span class="permission-check">✓</span> <strong>Hide Import:</strong> Disables Excel/CSV import option</li>
+            </ul>
+          </li>
+          <li>
+            Repeat this configuration for all models needed
+          </li>
+        </ul>
+      </div>
+    
+    <h3>3. Field Access Restrictions</h3>
+    <ol class="steps">
+        <li>Toggle <strong>Fields(s) Restriction</strong> to enable <strong>Fields Access Restrictions</strong> section.</li>           
+        </li>
+        <li>Apply restrictions to as many fields as needed</li>
+    </ol>
+
+    <div class="note">
+        <ul >
+            <li><strong>Field Name</strong>: Select the fields to restrict</li>
+            <li><strong>Restriction Type</strong>: Choose between:
+                <ul>
+                    <li><strong>Readonly</strong>: Field is visible but cannot be modified</li>
+                    <li><strong>Invisible/Hide</strong>: Field is completely hidden</li>
+                    <li><strong>Mandatory</strong>: Field becomes required</li>
+                </ul>
+            </li>
+    </div>
+    
+    <h3>4. Record Filtering</h3>
+    <ol class="steps">
+        <li>In the user form, find the <strong>Records Filter</strong> section</li>
+        <li>Click <strong>New Rule</strong> to create a filter</li>
+        <li>Configure the domain filter to restrict which records the user can see</li>
+        <li>You can create multiple rules and choose whether they should match all or any of them</li>
+    </ol>
+    
+    <h2>Screenshots</h2>
+    
+    <button type="button" class="collapsible">User Access Configuration</button>
+    <div class="content">
+        <div class="screenshot-container">
+            <div class="screenshot-item">
+                <h4>User Settings Screen</h4>
+                <img src="ACM-01.png" alt="User Access Configuration" width="100%">
+                <p>Configure basic user settings and access rights in this screen.</p>
+            </div>
+        </div>
+    </div>
+    
+    <button type="button" class="collapsible">Access Management Interface</button>
+    <div class="content">
+        <div class="screenshot-container">
+            <div class="screenshot-item">
+                <h4>Main Access Management View</h4>
+                <img src="ACM-02.png" alt="Access Management Interface" width="100%">
+                <p>The main interface for managing user access rights and permissions.</p>
+            </div>
+        </div>
+    </div>
+    
+    <button type="button" class="collapsible">Field Restrictions Setup</button>
+    <div class="content">
+        <div class="screenshot-container">
+            <div class="screenshot-item">
+                <h4>Field Access Restrictions</h4>
+                <img src="ACM-03.png" alt="Field Restrictions Setup" width="100%">
+                <p>Configure field-level restrictions including readonly, invisible, and mandatory settings.</p>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="collapsible">Applying rules for the Records</button>
+    <div class="content">
+        <div class="screenshot-container">
+            <div class="screenshot-item">
+                <h4>Records Filter</h4>
+                <img src="ACM-04.png" alt="Records Filter Rule" width="100%">
+                <p>Based on given rules, records will be filtered for the user.</p>
+            </div>
+        </div>
+    </div>
+    
+    <button type="button" class="collapsible">Sales Order View Example</button>
+    <div class="content">
+        <div class="screenshot-container">
+            <div class="screenshot-item">
+                <h4>Sales Order with Restrictions Applied</h4>
+                <img src="ACM-05.png" alt="Sales Order list View" width="100%">
+                <p>Based on the Records Filter Rule, the system displays only the orders which are in Quotation status.</p>
+                <img src="ACM-06.png" alt="Sales Order Form View" width="100%">
+                <p>As the Readonly option enabled, the form becomes completely uneditable, all the Buttons/Action were hidden, while the Customer, Taxes field remains hidden as specified in the field-level restrictions.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // JavaScript for collapsible sections
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+        
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                } 
+            });
+        }
+        
+        // Open the first collapsible by default
+        document.querySelector(".collapsible").click();
+    </script>
+    
+    
+    
+    <div style="font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h2 style="color: #2c3e50; border-bottom: 2px solid #4a6fa5; padding-bottom: 8px;">Need Demo/Support for this Module or any other queries?</h2>
+        
+        <div style="background-color: #f8f9fa; border-left: 4px solid #4a6fa5; padding: 15px; margin: 20px 0; border-radius: 0 4px 4px 0;">
+            <p style="font-size: 16px; line-height: 1.6; margin: 0; color: #333;">
+                <strong style="color: #4a6fa5;">✉️ Contact:</strong> 
+                <a href="mailto:lambdadigitech@gmail.com" style="color: #4a6fa5; text-decoration: none; font-weight: bold;">lambdadigitech@gmail.com</a>
+            </p>
+            <p style="font-size: 15px; line-height: 1.5; margin: 10px 0 0 0; color: #555;">
+                • <strong>Fast response</strong> (typically within hours)<br>
+                • <strong>Services:</strong> Implementation | Support | Bug Fixes | Migration<br>
+                • <strong>Cost-effective</strong> Hourly pricing
+            </p>
+        </div>
+    
+        <div style="background-color: #fff8e1; padding: 12px; border-radius: 4px; margin-top: 20px; font-size: 14px;">
+            <strong>⚠️ Note:</strong> This module was developed for Odoo V16. Compatibility with other versions is not guaranteed.
+        </div>
+    </div>
+</body>
+</html>

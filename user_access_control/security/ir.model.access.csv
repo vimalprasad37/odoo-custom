@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+"access_ir_model_user_access","ir_model_all_access","base.model_ir_model",user_access_control.group_access_manager,1,1,0,0
+"access_ir_model_fields_user_access","ir_model_fields_all_access","base.model_ir_model_fields",user_access_control.group_access_manager,1,1,0,0
+access_management_line,access.management.line,model_access_management_line,user_access_control.group_access_manager,1,1,1,1
+fields_access,fields.access,model_fields_access,user_access_control.group_access_manager,1,1,1,1

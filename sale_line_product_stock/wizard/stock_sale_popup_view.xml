@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="stock_sale_popup_tree_view" model="ir.ui.view">
+        <field name="name">stock.sale.popup.tree.view</field>
+        <field name="model">stock.sale.popup</field>
+        <field name="arch" type="xml">
+            <tree string="Sales Order Lines Popup" multi_edit="1" create="0" delete="0" editable="bottom" class="o_tree_view_custom custom_column custom_column_td">
+                <header>
+                    <button name="add_multi_sale_lines" type="object" class="oe_highlight" string="Add Lines"/>
+                </header>
+                <field name="product_id" readonly="1"/>
+                <field name="lot_id" readonly="1" optional="hide"/>
+                <field name="quantity" readonly="1"/>
+                <field name="reserved_quantity" readonly="1"/>
+                <field name="avbl_quantity" readonly="1"/>
+                <field name="product_uom_id" readonly="1"/>
+                <field name="sales_qty" required="1"/>
+                <field name="sales_price"/>
+                <field name="sale_line_updated" invisible="1"/>
+                <button name="add_to_sale_line" type="object" class="btn btn-info" string="Add" />
+            </tree>
+
+        </field>
+    </record>
+
+    <record id="stock_sale_popup_view_search" model="ir.ui.view">
+        <field name="name">stock.sale.popup.view.search</field>
+        <field name="model">stock.sale.popup</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <separator/>
+                <filter name="avbl_stock" string="Available" domain="[('avbl_quantity', '>', 0)]"/>
+                <filter name="out_of_stock" string="Out of Stock" domain="[('avbl_quantity', '&lt;', 1)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="stock_sale_popup_view">
+        <field name="name">Product Stock Sale</field>
+        <field name="res_model">stock.sale.popup</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{'search_default_avbl_stock': True}</field>
+        <field name="view_id" ref="stock_sale_popup_tree_view"/>
+        <field name="search_view_id" ref="stock_sale_popup_view_search"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
