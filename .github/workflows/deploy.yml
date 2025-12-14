@@ -3,7 +3,7 @@ name: Deploy Odoo Addons to EC2
 on:
   push:
     branches:
-      - main
+      - 16.0
 
 jobs:
   deploy:
